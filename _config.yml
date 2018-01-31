@@ -1,5 +1,5 @@
-# source:          .
 title: Simple MTG
+source:          .
 destination:     ./_site
 markdown_ext:    markdown,mkd,mkdn,md
 url:             http://sinemetu1.github.io
