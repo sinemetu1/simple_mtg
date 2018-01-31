@@ -1,0 +1,7 @@
+_site
+.sass-cache
+.jekyll-metadata
+_includes/tag_cloud.html
+*.swp
+_site/*
+tags/*

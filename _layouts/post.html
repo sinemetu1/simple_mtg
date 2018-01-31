@@ -1,0 +1,57 @@
+---
+layout: default
+---
+
+{% if content %}
+  <div class="row">
+      <div class="content columns large-9 small-12 small-centered halis-r-book"
+           style="font-size:1.05em;">
+          {{ content }}
+      </div>
+  </div>
+  {% if page.title contains "tagged" %}
+  {% else %}
+    <div class="row">
+        <div class="columns small-10 small-centered large-10 large-centered halis-r-book" style="font-size:1.25em;">
+            <div class="columns small-6 large-6">
+                <a href="{{ site.baseurl }}" class="halis-r-book right">Home</a>
+            </div>
+            <div class="columns small-6 large-6 halis-r-book" style="">
+                <a href="https://twitter.com/sinemetu11"><i class="foundicon-twitter"></i></a>
+                <a href="https://github.com/sinemetu1"><i class="foundicon-github"></i></a>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="columns small-centered large-centered">
+            <div class="row">
+                <div class="columns small-6 large-6">
+                    <h5 class="halis-r-x-light subheader right">Elsewhere:</h5>
+                </div>
+                <div class="columns small-6 large-6 halis-r-book" style="margin-top:6.2px;color:#6F6F6F;">
+                    {% for post in site.posts limit: 4 %}
+                        {% if post.title != page.title %}
+                        <a href="{{ post.url }}">{{ post.title }}</a>
+                        <br/>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="columns small-centered large-centered">
+            <div class="row">
+                <div class="columns small-6 large-6">
+                    <h5 class="halis-r-x-light subheader right">Tags:</h5>
+                </div>
+                <div class="columns small-6 large-6 halis-r-book" style="margin-top:6.2px;color:#6F6F6F;">
+                    {% comment %}
+                    {% include tag_cloud.html %}
+                    {% endcomment %}
+                </div>
+            </div>
+        </div>
+    </div>
+  {% endif %}
+{% endif %}

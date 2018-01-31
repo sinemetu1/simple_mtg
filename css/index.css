@@ -1,0 +1,19 @@
+#modal .th img {
+    max-width:150px;
+}
+
+.fleft {
+    float: left;
+}
+
+.fright {
+    float: right;
+}
+
+#modal .card {
+    padding-left: 1.0em;
+}
+
+/*#modal .card .name {*/
+    /*max-width: 100px;*/
+/*}*/
