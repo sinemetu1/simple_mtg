@@ -12,3 +12,11 @@
 #modal .list-card {
     max-width:150px;
 }
+
+#modal .button-panel {
+    padding-top: 1em;
+}
+
+#modal .selected img {
+    border: 2px solid #466d98;
+}
