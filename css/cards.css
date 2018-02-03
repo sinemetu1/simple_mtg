@@ -68,9 +68,9 @@
     position: relative;
     clear: both;
 }
-.playingCards ul.hand {
-    margin-bottom: 3.5em;
-}
+/*.playingCards ul.hand {*/
+    /*margin-bottom: 3.5em;*/
+/*}*/
 .playingCards ul.table li,
 .playingCards ul.hand li,
 .playingCards ul.deck li {
@@ -82,7 +82,7 @@
 
 .playingCards ul.hand,
 .playingCards ul.deck {
-    height: 8em;
+    height: 15em;
 }
 .playingCards ul.hand li,
 .playingCards ul.deck li {
