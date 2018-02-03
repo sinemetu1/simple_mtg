@@ -22,36 +22,44 @@ index.bind_search = function () {
 };
 
 index.build_search_modal = function (cards) {
-    console.log('cards');
-    console.log(cards);
-
-    var images = $("<div>");
-    for (var i = 0; i < cards.length; i++) {
-        var curr = cards[i];
-        if (i > 5) { // only display top 3
+    var images = $("<div class='media-object'>");
+    var filtered_cards = $.grep(cards, function (obj) {
+        if (obj.imageUrl) {
+            return obj;
+        }
+    });
+    for (var i = 0; i < filtered_cards.length; i++) {
+        var curr = filtered_cards[i];
+        var url = curr.imageUrl;
+        if (i > 5) {
             break;
         }
         //var name = curr.name;
-        var url = curr.imageUrl;
-        var img_html = '<div class="fleft card">'
-        //+ '<p class="name">' + name + '</p>'
-        +  '<p class="lead">'
-        +    '<a class="th" href="' + url + '">'
-        +      '<img src="' + url + '">'
-        +    '</a>'
-        +  '</p>'
-        + '</div>'
+        var img_html = '<div class="media-object-section">'
+            //+ '<p class="name">' + name + '</p>'
+            +  '<div>'
+            +    '<a class="th" href="' + url + '">'
+            +      '<img src="' + url + '">'
+            +      '<span class="image-hover-wrapper-reveal">'
+            +        '<p>Check it<br><i class="fa fa-link" aria-hidden="true"></i></p>'
+            +      '</span>'
+            +    '</a>'
+            +  '</div>'
+            + '</div>'
         ;
         images.append($(img_html));
+        if ((i+1) % 3 == 0) {
+            images.append("</br>");
+        }
     }
     var $modal = $("#modal");
     var html = images.append('<button class="close-button" data-close aria-label="Close reveal" type="button">'
-    +    '<span aria-hidden="true">&times;</span>'
-    +  '</button>'
-    ).append('<div class="fright">'
+        +    '<span aria-hidden="true">&times;</span>'
+        +  '</button>'
+    ).append('<div><div class="fright">'
         + '<button id="to_battlefield" type="button" class="button">To Battlefield</button>'
         + '<button id="to_graveyard" type="button" class="button">To Graveyeard (aka instant)</button>'
-        + '</div>'
+        + '</div></div>'
     );
     //$("body").append($modal);
     console.log('$modal.html(html):');
