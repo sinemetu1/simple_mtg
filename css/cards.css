@@ -12,8 +12,8 @@
 
 .playingCards .card {
     display: inline-block;
-    width: 3.3em;
-    height: 4.6em;
+    width: 8.8em;
+    height: 12.267em;
     border: 1px solid #666;
     border-radius: .3em;
     -moz-border-radius: .3em;
@@ -26,7 +26,7 @@
     font-weight: normal;
     font-family: Arial, sans-serif;
     position: relative;
-    background-color: #fff;
+    background-color: #121212;
     -moz-box-shadow: .2em .2em .5em #333;
     -webkit-box-shadow: .2em .2em .5em #333;
     box-shadow: .2em .2em .5em #333;
@@ -484,9 +484,9 @@
 .playingCards ul.deck li {
     position: absolute;
 }
-.playingCards ul.hand li {
-    bottom: 0;
-}
+/*.playingCards ul.hand li {*/
+    /*bottom: 0;*/
+/*}*/
 .playingCards ul.hand li:nth-child(1)  { left: 0; }
 .playingCards ul.hand li:nth-child(2)  { left: 1.1em; }
 .playingCards ul.hand li:nth-child(3)  { left: 2.2em; }

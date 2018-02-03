@@ -5,19 +5,27 @@ index.init = function () {
 };
 
 index.bind_search = function () {
-    $("#search_cards").on('click', function (event) {
-        var s = $("#search_in").val();
-        if (s.trim() === "") {
-            alert('need to search with some text...');
-            return;
+    $("#search_cards").on('click tap', index.do_search);
+    $("#search_in").on('keypress',
+        function (e) {
+            if (e.which == 13) { index.do_search(e);
+            }
         }
+    );
+};
 
-        mtg.search(s, function (cards) {
-            index.build_search_modal(cards);
-        }, function (err) {
-            console.log('error');
-            console.log(err);
-        });
+index.do_search = function (event) {
+    var s = $("#search_in").val();
+    if (s.trim() === "") {
+        alert('need to search with some text...');
+        return;
+    }
+
+    mtg.search(s, function (cards) {
+        index.build_search_modal(cards);
+    }, function (err) {
+        console.log('error');
+        console.log(err);
     });
 };
 
@@ -40,9 +48,9 @@ index.build_search_modal = function (cards) {
             +  '<div>'
             +    '<a class="th" href="' + url + '">'
             +      '<img src="' + url + '">'
-            +      '<span class="image-hover-wrapper-reveal">'
-            +        '<p>Check it<br><i class="fa fa-link" aria-hidden="true"></i></p>'
-            +      '</span>'
+            //+      '<span class="image-hover-wrapper-reveal">'
+            //+        '<p>Check it<br><i class="fa fa-link" aria-hidden="true"></i></p>'
+            //+      '</span>'
             +    '</a>'
             +  '</div>'
             + '</div>'
