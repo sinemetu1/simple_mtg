@@ -5,6 +5,11 @@ index.graveyard = [];
 index.exile = [];
 
 index.init = function () {
+    if (/Mobi/.test(navigator.userAgent)) {
+        index.is_mobile = true;
+        document.addEventListener("touchstart", function(){}, true); // hover work for mobile
+    }
+
     index.bind_search();
 
     index.battlefield = [
@@ -64,16 +69,21 @@ index.build_search_modal = function (cards) {
         var $card_html = index.get_card_html(curr);
         $card_html.find('img').addClass('list-card');
         images.append($card_html);
-        if ((i+1) % 3 == 0) {
+        if (index.is_mobile) {
+            //images.append("</br>");
+        } else if ((i+1) % 3 == 0) {
             images.append("</br>");
         }
     }
-    var html = images.append('<div><div class="fright">'
-        + '<button id="to_battlefield" type="button" class="button">To Battlefield</button>'
-        + '<button id="to_graveyard" type="button" class="button">To Graveyeard (aka instant)</button>'
-        + '</div></div>'
-    );
-    index.basic_modal(html);
+    //var html = images.append('<div class="fright">'
+        //+ '<button id="to_battlefield" type="button" class="button">To Battlefield</button>'
+        //+ '<button id="to_graveyard" type="button" class="button">To Graveyeard (aka instant)</button>'
+        //+ '</div>'
+    //);
+    if (index.is_mobile) {
+        images.append('<button class="button" data-close type="button">Close</button>');
+    }
+    index.basic_modal(images);
 };
 
 index.get_card_html = function (card) {
@@ -94,10 +104,9 @@ index.get_card_html = function (card) {
 };
 
 index.basic_modal = function ($html) {
-    var $modal = $("#modal");
-    $html.append('<button class="close-button" data-close aria-label="Close reveal" type="button">'
+    var $modal = $("#modal").append('<button class="close-button" data-close aria-label="Close reveal" type="button">'
         +    '<span aria-hidden="true">&times;</span>'
         +  '</button>'
     );
-    $modal.html($html).foundation('open');
+    $modal.append($html).foundation('open');
 };
