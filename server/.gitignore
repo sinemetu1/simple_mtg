@@ -1,0 +1,8 @@
+.tox/
+.coverage
+simple_mtg_server.egg-info
+build/
+dist/
+dump.rdb
+venv/
+flask_session/

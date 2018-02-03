@@ -20,3 +20,10 @@
 #modal .selected img {
     border: 2px solid #466d98;
 }
+
+#chat_log {
+    overflow: scroll;
+    overflow-y: scroll;
+    border: solid 1px #121212;
+    height: 150px;
+}

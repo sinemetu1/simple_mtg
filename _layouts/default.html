@@ -26,6 +26,7 @@
 
         <link href="{{ site.baseurl }}/css/index.css" rel="stylesheet" type="text/css" >
         <link href="{{ site.baseurl }}/css/cards.css" rel="stylesheet" type="text/css" >
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
         <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
         <script src="https://dhbhdrzi4tiry.cloudfront.net/cdn/sites/foundation.js"></script>
     </head>
@@ -47,23 +48,35 @@
           </div>
         <div class="row">
             <p>Battlefield</p>
-            <div id="hand_battlefield" class="playingCards">
+            <div id="hand_battlefield" class="playingCards large-6 columns">
+            </div>
+            <div class="large-6 columns">
+                <div class="row collapse">
+                    <div id="chat_log">
+                    </div>
+                    <div class="large-10 columns">
+                        <input id="chat_to_send" type="text" placeholder="" />
+                    </div>
+                    <div class="large-2 columns">
+                        <button id="chat_send_btn" type="button" class="button">Send</button>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="row">
             <p>Graveyard</p>
-            <div id="hand_graveyard" class="playingCards">
+            <div id="hand_graveyard" class="playingCards large-8 columns">
             </div>
         </div>
         <div class="row">
             <p>Exile</p>
-            <div id="hand_exile" class="playingCards">
+            <div id="hand_exile" class="playingCards large-8 columns">
             </div>
         </div>
 
         <div id="modal" class="reveal" data-reveal data-close-on-click="true"></div>
 
-        <!--<script src="{{ site.baseurl }}/lib/foundation/js/vendor/foundation.js"></script>-->
+        <script src="{{ site.baseurl }}/js/socket.js"></script>
         <script src="{{ site.baseurl }}/js/mtg.js"></script>
         <script src="{{ site.baseurl }}/js/index.js"></script>
         <script>

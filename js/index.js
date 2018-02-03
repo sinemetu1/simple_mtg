@@ -11,6 +11,39 @@ index.init = function () {
     }
     index.bind_search();
     index.display_hands();
+    index.join_or_create();
+};
+
+index.join_or_create = function () {
+    var $html = $('<div>'
+        + '<p class="lead">Join or create room.</p>'
+        + '<div class="row">'
+        + '  <div class="large-16 columns">'
+        + '    <div class="row collapse">'
+        + '      <div class="small-10 columns">'
+        + '        <input type="text" placeholder="Room id" id="join_room_id">'
+        + '      </div>'
+        + '      <div class="small-2 columns">'
+        + '        <a id="join_room" href="#" class="button postfix">Join</a>'
+        + '      </div>'
+        + '    </div>'
+        + '  </div>'
+        + '</div>'
+        + '<div class="row">'
+        + '  <div class="large-16 columns">'
+        + '    <div class="row collapse">'
+        + '      <div class="small-2 columns">'
+        + '        <a id="create_room" href="#" class="button postfix">Create room</a>'
+        + '      </div>'
+        + '    </div>'
+        + '  </div>'
+        + '</div>'
+        + '</div>'
+    );
+
+    socket.bind_join($html.find('#join_room'));
+    socket.bind_join($html.find('#create_room'));
+    var $modal = index.basic_modal($html);
 };
 
 index.display_hands = function () {
