@@ -19,9 +19,19 @@ index.join_or_create = function () {
         + '<p class="lead">Join or create room.</p>'
         + '<div class="row">'
         + '  <div class="large-16 columns">'
+        + '    <label>Name'
+        + '      <input id="join_user_name" type="text" placeholder="type username" required pattern="alpha">'
+        + '      <span id="join_user_err" class="form-error">'
+        + '        A username with length 3 or greater is required. What about Bob?'
+        + '      </span>'
+        + '    </label>'
+        + '  </div>'
+        + '</div>'
+        + '<div class="row">'
+        + '  <div class="large-16 columns">'
         + '    <div class="row collapse">'
         + '      <div class="small-10 columns">'
-        + '        <input type="text" placeholder="Room id" id="join_room_id">'
+        + '        <input type="text" placeholder="Room id, if your friend has already created one" id="join_room_id">'
         + '      </div>'
         + '      <div class="small-2 columns">'
         + '        <a id="join_room" href="#" class="button postfix">Join</a>'
@@ -71,9 +81,9 @@ index.bind_hand = function () {
             + '</div>'
         );
         
-        var pnt = $(this).closest('.playingCards').attr('id').split('_')[1];
+        var loc = $(this).closest('.playingCards').attr('id').split('_')[1];
         var $modal = index.basic_modal($html);
-        index.bind_btn_mv_panel(index[pnt], $html, card);
+        index.bind_btn_mv_panel(index[loc], $html, card);
     });
 };
 
@@ -177,9 +187,15 @@ index.build_search_modal = function (cards) {
         + '<button id="to_battlefield" type="button" class="button add fright">Battlefield</button>'
     );
     btn_panel.find('.add').on('click tap', function (e) {
-        var pnt = $(this).attr('id').split('_')[1];
-        var url = $('.selected').attr("href");
-        index[pnt].push({"imageUrl": url});
+        var $sel = $('.selected');
+        var loc = $(this).attr('id').split('_')[1];
+        var url = $sel.attr("href");
+        var name = $sel.attr("name");
+
+        index[loc].push({"imageUrl": url});
+
+        socket.send_card(loc, name);
+
         index.display_hands();
         $("#modal").foundation('close');
     });
@@ -191,10 +207,11 @@ index.build_search_modal = function (cards) {
 
 index.get_card_html = function (card) {
     var url = card.imageUrl;
+    var name = card.name;
     var img_html = '<div class="media-object-section">'
             //+ '<p class="name">' + name + '</p>'
             +  '<div>'
-            +    '<a class="th" href="' + url + '">'
+            +    '<a class="th" href="' + url + '" name="' + name + '">'
             +      '<img src="' + url + '">'
             //+      '<span class="image-hover-wrapper-reveal">'
             //+        '<p>Check it<br><i class="fa fa-link" aria-hidden="true"></i></p>'

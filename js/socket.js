@@ -3,6 +3,7 @@ var socket = {};
 socket.namespace = '/test';
 socket.port = 5000;
 socket.room = "";
+socket.username = "";
 
 socket.init_socket = function () {
     if (socket.socket === undefined) {
@@ -49,6 +50,7 @@ socket.bind = function (skt, debug) {
         }
         return false;
     });
+    
 
     //$('form#close').submit(function(event) {
         //skt.emit('close_room', {room: $('#close_room').val()});
@@ -60,17 +62,40 @@ socket.bind = function (skt, debug) {
     //});
 };
 
+socket.send_card = function (loc, card_name) {
+    if (socket.socket === undefined) {
+        console.log('cant share with others in room socket undefined');
+        console.log(loc, card_name);
+        return;
+    }
+    socket.socket.emit('room_card_event', {
+        room: socket.room,
+        name: socket.name,
+        loc: loc,
+        data: card_name
+    });
+};
+
 socket.bind_join = function ($html) {
     $html.on('click tap', function(event) {
+        $('#join_user_err').hide();
+        if ($("#join_user_name").val().length < 2) {
+            $('#join_user_err').show();
+            return false;
+        }
+        
         socket.init_socket();
         socket.bind(socket.socket, true);
 
+        var name = $('#join_user_name').val();
         var rm = $('#join_room_id').val();
         if (rm === "") {
             rm = uuidv4();
         }
-        socket.socket.emit('join', {room: rm});
+        socket.socket.emit('join', {room: rm, name: name});
         socket.room = rm;
+        socket.username = name;
+
         if ($html.closest('#modal').length >= 1) {
             $("#modal").foundation('close');
         }
