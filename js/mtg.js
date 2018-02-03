@@ -7,6 +7,7 @@ mtg.search = function (name, cb, fail) {
           name: name
       }
   }).done(function (data) {
+      console.log(data.cards);
       cb(data.cards);
   }).fail(function (err) {
       fail(err);
@@ -14,7 +15,9 @@ mtg.search = function (name, cb, fail) {
 };
 
 mtg.get_card = function (a_card) {
-    return $("<li><a class='card'> <img src='" + a_card.imageUrl + "'/></a>");
+    var the_card = $("<a class='card'> <img src='" + a_card.imageUrl + "'/></a>")
+        .data("imageUrl", a_card.imageUrl);
+    return $("<li></li>").append(the_card);
 };
 
 mtg.make_hand = function (cards) {

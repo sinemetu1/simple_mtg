@@ -1,7 +1,27 @@
 var index = {};
 
+index.battlefield = [];
+index.graveyard = [];
+index.exile = [];
+
 index.init = function () {
     index.bind_search();
+
+    index.battlefield = [
+        { "imageUrl": "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=429879&type=card" },
+        { "imageUrl": "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=430749&type=card" }
+    ];
+    var a_hand = mtg.make_hand(index.battlefield);
+    $("#hand_battlefield").append(a_hand);
+    index.bind_hand();
+};
+
+index.bind_hand = function () {
+    $(".hand .card").on('click', function (event) {
+        var url = $(this).data("imageUrl");
+        var $html = index.get_card_html({"imageUrl": url});
+        index.basic_modal($html);
+    });
 };
 
 index.bind_search = function () {
@@ -38,12 +58,27 @@ index.build_search_modal = function (cards) {
     });
     for (var i = 0; i < filtered_cards.length; i++) {
         var curr = filtered_cards[i];
-        var url = curr.imageUrl;
         if (i > 5) {
             break;
         }
-        //var name = curr.name;
-        var img_html = '<div class="media-object-section">'
+        var $card_html = index.get_card_html(curr);
+        $card_html.find('img').addClass('list-card');
+        images.append($card_html);
+        if ((i+1) % 3 == 0) {
+            images.append("</br>");
+        }
+    }
+    var html = images.append('<div><div class="fright">'
+        + '<button id="to_battlefield" type="button" class="button">To Battlefield</button>'
+        + '<button id="to_graveyard" type="button" class="button">To Graveyeard (aka instant)</button>'
+        + '</div></div>'
+    );
+    index.basic_modal(html);
+};
+
+index.get_card_html = function (card) {
+    var url = card.imageUrl;
+    var img_html = '<div class="media-object-section">'
             //+ '<p class="name">' + name + '</p>'
             +  '<div>'
             +    '<a class="th" href="' + url + '">'
@@ -55,23 +90,14 @@ index.build_search_modal = function (cards) {
             +  '</div>'
             + '</div>'
         ;
-        images.append($(img_html));
-        if ((i+1) % 3 == 0) {
-            images.append("</br>");
-        }
-    }
+    return $(img_html);
+};
+
+index.basic_modal = function ($html) {
     var $modal = $("#modal");
-    var html = images.append('<button class="close-button" data-close aria-label="Close reveal" type="button">'
+    $html.append('<button class="close-button" data-close aria-label="Close reveal" type="button">'
         +    '<span aria-hidden="true">&times;</span>'
         +  '</button>'
-    ).append('<div><div class="fright">'
-        + '<button id="to_battlefield" type="button" class="button">To Battlefield</button>'
-        + '<button id="to_graveyard" type="button" class="button">To Graveyeard (aka instant)</button>'
-        + '</div></div>'
     );
-    //$("body").append($modal);
-    console.log('$modal.html(html):');
-    console.log($modal.html(html));
-    $modal.html(html).foundation('open');
-    //$modal.foundation('open');
+    $modal.html($html).foundation('open');
 };
