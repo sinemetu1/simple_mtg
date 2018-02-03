@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import logging
+
 from threading import Lock
 from flask import Flask, render_template, session, request
 from flask_socketio import SocketIO, emit, join_room, leave_room, \
@@ -27,9 +29,9 @@ def background_thread():
                       namespace='/test')
 
 
-@app.route('/')
-def index():
-    return render_template('index.html', async_mode=socketio.async_mode)
+# @app.route('/')
+# def index():
+    # return render_template('index.html', async_mode=socketio.async_mode)
 
 
 @socketio.on('my_event', namespace='/test')
@@ -39,21 +41,28 @@ def test_message(message):
          {'data': message['data'], 'count': session['receive_count']})
 
 
-@socketio.on('my_broadcast_event', namespace='/test')
-def test_broadcast_message(message):
-    session['receive_count'] = session.get('receive_count', 0) + 1
-    emit('my_response',
-         {'data': message['data'], 'count': session['receive_count']},
-         broadcast=True)
+# @socketio.on('my_broadcast_event', namespace='/test')
+# def test_broadcast_message(message):
+    # session['receive_count'] = session.get('receive_count', 0) + 1
+    # emit('my_response',
+         # {'data': message['data'], 'count': session['receive_count']},
+         # broadcast=True)
 
 
 @socketio.on('join', namespace='/test')
 def join(message):
-    join_room(message['room'])
+    room = message['room']
+    name = message['name']
+    join_room(room)
+    logging.info("{} joined {}".format(name, room))
+
     session['receive_count'] = session.get('receive_count', 0) + 1
     emit('my_response',
-         {'data': message['name'] + ' in rooms: ' + ', '.join(rooms()),
+         {'data': name + ' in rooms: ' + ', '.join(rooms()),
           'count': session['receive_count']})
+    # message the room:
+    emit('my_response', {'data': message['name'] + ' has entered the room. (' + room + ')'},
+        room=room)
 
 
 @socketio.on('leave', namespace='/test')
@@ -77,6 +86,7 @@ def close(message):
 @socketio.on('my_room_event', namespace='/test')
 def send_room_message(message):
     session['receive_count'] = session.get('receive_count', 0) + 1
+    logging.info("Sending {} to {}".format(message['data'], message['room']));
     emit('my_response',
          {'data': message['data'], 'count': session['receive_count']},
          room=message['room'])
@@ -120,6 +130,9 @@ def test_connect():
 def test_disconnect():
     print('Client disconnected', request.sid)
 
+def main():
+    logging.basicConfig(level=logging.INFO)
+    socketio.run(app, debug=True)
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    main()

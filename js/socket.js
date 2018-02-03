@@ -17,6 +17,9 @@ socket.bind = function (skt, debug) {
     skt.on('connect', function() {
         skt.emit('my_event', {data: 'I\'m connected!'});
     });
+    skt.on('reconnect', () => {
+        skt.emit('join', {room: socket.room, name: socket.username});
+    })
 
     skt.on('my_response', function(msg) {
         var to_append = '<br>' +
@@ -70,7 +73,7 @@ socket.send_card = function (loc, card_name) {
     }
     socket.socket.emit('room_card_event', {
         room: socket.room,
-        name: socket.name,
+        name: socket.username,
         loc: loc,
         data: card_name
     });
