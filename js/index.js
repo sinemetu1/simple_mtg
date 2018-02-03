@@ -9,23 +9,69 @@ index.init = function () {
         index.is_mobile = true;
         document.addEventListener("touchstart", function(){}, true); // hover work for mobile
     }
-
     index.bind_search();
+    index.display_hands();
+};
 
-    index.battlefield = [
-        { "imageUrl": "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=429879&type=card" },
-        { "imageUrl": "http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=430749&type=card" }
-    ];
+index.display_hands = function () {
     var a_hand = mtg.make_hand(index.battlefield);
-    $("#hand_battlefield").append(a_hand);
+    $("#hand_battlefield").html(a_hand);
+
+    var a_hand = mtg.make_hand(index.graveyard);
+    $("#hand_graveyard").html(a_hand);
+
+    var a_hand = mtg.make_hand(index.exile);
+    $("#hand_exile").html(a_hand);
     index.bind_hand();
 };
 
 index.bind_hand = function () {
     $(".hand .card").on('click', function (event) {
         var url = $(this).data("imageUrl");
-        var $html = index.get_card_html({"imageUrl": url});
-        index.basic_modal($html);
+        var card = {"imageUrl": url};
+        var $html = index.get_card_html(card);
+        $html.append('<div class="button-panel">'
+            + '<button id="to_battlefield" type="button" class="button">Battlefield</button>'
+            + '<button id="to_graveyard" type="button" class="button">Graveyeard</button>'
+            + '<button id="to_exile" type="button" class="button">Exile</button>'
+            + '<button id="delete" type="button" class="button">Delete</button>'
+            + '</div>'
+        );
+        
+        var pnt = $(this).closest('.playingCards').attr('id').split('_')[1];
+        var $modal = index.basic_modal($html);
+        index.bind_btn_mv_panel(index[pnt], $html, card);
+    });
+};
+
+index.bind_btn_mv_panel = function (src, pnl, card) {
+    var idx = src.findIndex(function (obj) {
+        if (obj.imageUrl == card.imageUrl) {
+            return true;
+        }
+    });
+    pnl.find("#to_battlefield").on('click tap', function (e) {
+        src.splice(idx, 1);
+        index.battlefield.push(card);
+        index.display_hands();
+        $("#modal").foundation('close');
+    });
+    pnl.find("#to_graveyard").on('click tap', function (e) {
+        src.splice(idx, 1);
+        index.graveyard.push(card);
+        index.display_hands();
+        $("#modal").foundation('close');
+    });
+    pnl.find("#to_exile").on('click tap', function (e) {
+        src.splice(idx, 1);
+        index.exile.push(card);
+        index.display_hands();
+        $("#modal").foundation('close');
+    });
+    pnl.find("#delete").on('click tap', function (e) {
+        src.splice(idx, 1);
+        index.display_hands();
+        $("#modal").foundation('close');
     });
 };
 
@@ -56,6 +102,8 @@ index.do_search = function (event) {
 
 index.build_search_modal = function (cards) {
     var images = $("<div class='media-object'>");
+
+    // cards:
     var filtered_cards = $.grep(cards, function (obj) {
         if (obj.imageUrl) {
             return obj;
@@ -68,6 +116,11 @@ index.build_search_modal = function (cards) {
         }
         var $card_html = index.get_card_html(curr);
         $card_html.find('img').addClass('list-card');
+        $card_html.find('a').on('click tap', function (e) {
+            $(".selected").removeClass("selected");
+            $(this).addClass('selected');
+            return false;
+        });
         images.append($card_html);
         if (index.is_mobile) {
             //images.append("</br>");
@@ -75,15 +128,32 @@ index.build_search_modal = function (cards) {
             images.append("</br>");
         }
     }
-    //var html = images.append('<div class="fright">'
-        //+ '<button id="to_battlefield" type="button" class="button">To Battlefield</button>'
-        //+ '<button id="to_graveyard" type="button" class="button">To Graveyeard (aka instant)</button>'
-        //+ '</div>'
-    //);
+
+    // buttons:
+    var btn_panel = $("<div class='button-panel'>");
     if (index.is_mobile) {
-        images.append('<button class="button" data-close type="button">Close</button>');
+        var $close = $('<button class="button fleft" data-close type="button">Close</button>').on('click tap',
+            function () {
+                $("#modal").foundation('close');
+            });
+        btn_panel.append($close);
     }
+    btn_panel.append(
+        '<button id="to_exile" type="button" class="button add fright">Exile</button>'
+        + '<button id="to_graveyard" type="button" class="button add fright">Graveyeard</button>'
+        + '<button id="to_battlefield" type="button" class="button add fright">Battlefield</button>'
+    );
+    btn_panel.find('.add').on('click tap', function (e) {
+        var pnt = $(this).attr('id').split('_')[1];
+        var url = $('.selected').attr("href");
+        index[pnt].push({"imageUrl": url});
+        index.display_hands();
+        $("#modal").foundation('close');
+    });
+    
+    images.append(btn_panel);
     index.basic_modal(images);
+    
 };
 
 index.get_card_html = function (card) {
@@ -104,9 +174,11 @@ index.get_card_html = function (card) {
 };
 
 index.basic_modal = function ($html) {
+    $("#modal").empty();
     var $modal = $("#modal").append('<button class="close-button" data-close aria-label="Close reveal" type="button">'
         +    '<span aria-hidden="true">&times;</span>'
         +  '</button>'
     );
     $modal.append($html).foundation('open');
+    return $modal;
 };
