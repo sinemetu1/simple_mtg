@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<html>
+    <head>
+        <meta charset="utf-8" />
+
+        <!-- Set the viewport width to device width for mobile -->
+        <meta name="viewport" content="width=device-width" />
+        
+          <meta property="og:title" content="Welcome to Jekyll!">
+          
+        
+
+        <title>Simple MTG</title>
+        
+        <link rel="stylesheet" href="https://dhbhdrzi4tiry.cloudfront.net/cdn/sites/foundation.min.css">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/foundation-icons.css" rel="stylesheet" type="text/css">
+
+        <link href="/simple_mtg/css/index.css" rel="stylesheet" type="text/css" >
+        <link href="/simple_mtg/css/cards.css" rel="stylesheet" type="text/css" >
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script src="https://dhbhdrzi4tiry.cloudfront.net/cdn/sites/foundation.js"></script>
+    </head>
+    <body class="main-sectino">
+        <div class="top-bar">
+          <div class="row">
+            <div class="top-bar-left">
+              <ul class="dropdown menu" data-dropdown-menu="" role="menubar" data-dropdownmenu="601fs2-dropdownmenu">
+                <li class="menu-text" role="menuitem" tabindex="0">Simple MTG</li>
+              </ul>
+            </div>
+            <div class="top-bar-right">
+              <ul class="menu">
+              <li><input id="search_in" type="search" placeholder="Search"></li>
+              <li><button id="search_cards" type="button" class="button">Search</button></li>
+            </ul>
+            </div>
+            </div>
+          </div>
+        <!--
+  <div class="row">
+      <div class="content columns large-9 small-12 small-centered halis-r-book"
+           style="font-size:1.05em;">
+          <p>You’ll find this post in your <code class="highlighter-rouge">_posts</code> directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run <code class="highlighter-rouge">jekyll serve</code>, which launches a web server and auto-regenerates your site when a file is updated.</p>
+
+<p>To add new posts, simply add a file in the <code class="highlighter-rouge">_posts</code> directory that follows the convention <code class="highlighter-rouge">YYYY-MM-DD-name-of-post.ext</code> and includes the necessary front matter. Take a look at the source for this post to get an idea about how it works.</p>
+
+<p>Jekyll also offers powerful support for code snippets:</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">print_hi</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+  <span class="nb">puts</span> <span class="s2">"Hi, </span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2">"</span>
+<span class="k">end</span>
+<span class="n">print_hi</span><span class="p">(</span><span class="s1">'Tom'</span><span class="p">)</span>
+<span class="c1">#=&gt; prints 'Hi, Tom' to STDOUT.</span></code></pre></figure>
+
+<p>Check out the <a href="https://jekyllrb.com/docs/home">Jekyll docs</a> for more info on how to get the most out of Jekyll. File all bugs/feature requests at <a href="https://github.com/jekyll/jekyll">Jekyll’s GitHub repo</a>. If you have questions, you can ask them on <a href="https://talk.jekyllrb.com/">Jekyll Talk</a>.</p>
+
+
+      </div>
+  </div>
+  
+    <div class="row">
+        <div class="columns small-10 small-centered large-10 large-centered halis-r-book" style="font-size:1.25em;">
+            <div class="columns small-6 large-6">
+                <a href="/simple_mtg" class="halis-r-book right">Home</a>
+            </div>
+            <div class="columns small-6 large-6 halis-r-book" style="">
+                <a href="https://twitter.com/sinemetu11"><i class="foundicon-twitter"></i></a>
+                <a href="https://github.com/sinemetu1"><i class="foundicon-github"></i></a>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="columns small-centered large-centered">
+            <div class="row">
+                <div class="columns small-6 large-6">
+                    <h5 class="halis-r-x-light subheader right">Elsewhere:</h5>
+                </div>
+                <div class="columns small-6 large-6 halis-r-book" style="margin-top:6.2px;color:#6F6F6F;">
+                    
+                        
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="columns small-centered large-centered">
+            <div class="row">
+                <div class="columns small-6 large-6">
+                    <h5 class="halis-r-x-light subheader right">Tags:</h5>
+                </div>
+                <div class="columns small-6 large-6 halis-r-book" style="margin-top:6.2px;color:#6F6F6F;">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+  
+
+-->
+        <div class="row">
+            <div id="hand_battlefield" class="playingCards">
+            </div>
+        </div>
+        <div class="row">
+            <div id="hand_graveyard" class="playingCards">
+            </div>
+        </div>
+        <div class="row">
+            <div id="hand_exile" class="playingCards">
+            </div>
+        </div>
+
+        <div id="modal" class="reveal" data-reveal data-close-on-click="true"></div>
+
+        <!--<script src="/simple_mtg/lib/foundation/js/vendor/foundation.js"></script>-->
+        <script src="/simple_mtg/js/mtg.js"></script>
+        <script src="/simple_mtg/js/index.js"></script>
+        <script>
+            $(document).foundation();
+            $(document).ready(function () {
+              index.init();
+            });
+        </script>
+    </body>
+</html>

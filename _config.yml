@@ -1,8 +1,0 @@
-title: Simple MTG
-source:          .
-destination:     ./_site
-markdown_ext:    markdown,mkd,mkdn,md
-url:             http://sinemetu1.github.io
-baseurl:         /simple_mtg
-permalink:       /:title.html
-future:          false

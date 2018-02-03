@@ -1,7 +1,3 @@
-#modal .th img {
-    max-width:150px;
-}
-
 .fleft {
     float: left;
 }
@@ -10,10 +6,9 @@
     float: right;
 }
 
-#modal .card {
-    padding-left: 1.0em;
+#modal .media-object-section {
+    padding-right: 1rem;
 }
-
-/*#modal .card .name {*/
-    /*max-width: 100px;*/
-/*}*/
+#modal .list-card {
+    max-width:150px;
+}
