@@ -61,7 +61,9 @@ def join(message):
          {'data': name + ' in rooms: ' + ', '.join(rooms()),
           'count': session['receive_count']})
     # message the room:
-    emit('my_response', {'data': message['name'] + ' has entered the room. (' + room + ')'},
+    emit('my_response',
+        {'data': name + ' has entered the room. (' + room + ')',
+          'from': name},
         room=room)
 
 
@@ -96,11 +98,15 @@ def send_room_message(message):
     session['receive_count'] = session.get('receive_count', 0) + 1
     to_emit = "{} cast {} to their {}".format(
         message['name'],
-        message['data'],
+        message['data']['card_name'],
         message['loc']
     )
     emit('my_response',
-         {'data': to_emit, 'count': session['receive_count']},
+         {'data': to_emit,
+           'obj': message,
+           'count': session['receive_count'],
+           'from': message['name'],
+          'type': 'room_card_event'},
          room=message['room'])
 
 

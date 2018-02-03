@@ -194,7 +194,12 @@ index.build_search_modal = function (cards) {
 
         index[loc].push({"imageUrl": url});
 
-        socket.send_card(loc, name);
+        socket.send_card(loc, {
+            'card_name': name,
+            'imageUrl': url,
+            'tokens': {},
+            'energy_counters': {}
+        });
 
         index.display_hands();
         $("#modal").foundation('close');

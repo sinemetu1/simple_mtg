@@ -13,6 +13,22 @@ socket.init_socket = function () {
     }
 };
 
+socket.handle_message = function (msg) {
+    if (msg.from === socket.username) {
+        console.log('suppressing own messages...');
+        return;
+    }
+    if (msg.type === 'room_card_event') {
+        // TODO: handle player card event
+        index[msg.obj.loc].push(msg.obj.data);
+        index.display_hands();
+    }
+    var to_append = '<br>' +
+        $('<p class="message"/>').text('Received #' + msg.count + ': ' + msg.data)
+        .html();
+    $('#chat_log').append(to_append);
+};
+
 socket.bind = function (skt, debug) {
     skt.on('connect', function() {
         skt.emit('my_event', {data: 'I\'m connected!'});
@@ -21,12 +37,7 @@ socket.bind = function (skt, debug) {
         skt.emit('join', {room: socket.room, name: socket.username});
     })
 
-    skt.on('my_response', function(msg) {
-        var to_append = '<br>' +
-            $('<p class="message"/>').text('Received #' + msg.count + ': ' + msg.data)
-            .html();
-        $('#chat_log').append(to_append);
-    });
+    skt.on('my_response', socket.handle_message);
     if (debug) {
         var ping_pong_times = [];
         var start_time;
@@ -65,7 +76,7 @@ socket.bind = function (skt, debug) {
     //});
 };
 
-socket.send_card = function (loc, card_name) {
+socket.send_card = function (loc, card_obj) {
     if (socket.socket === undefined) {
         console.log('cant share with others in room socket undefined');
         console.log(loc, card_name);
@@ -75,7 +86,7 @@ socket.send_card = function (loc, card_name) {
         room: socket.room,
         name: socket.username,
         loc: loc,
-        data: card_name
+        data: card_obj
     });
 };
 
