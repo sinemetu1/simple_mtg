@@ -17,6 +17,11 @@
     padding-top: 1em;
 }
 
+#modal .mv-button-panel {
+    padding-left: 1em;
+}
+
+
 #modal .selected img {
     border: 2px solid #466d98;
 }

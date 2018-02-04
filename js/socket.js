@@ -79,7 +79,7 @@ socket.bind = function (skt, debug) {
 socket.send_card = function (loc, card_obj) {
     if (socket.socket === undefined) {
         console.log('cant share with others in room socket undefined');
-        console.log(loc, card_name);
+        console.log(loc, card_obj);
         return;
     }
     socket.socket.emit('room_card_event', {

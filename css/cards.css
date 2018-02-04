@@ -10,6 +10,27 @@
 /* card itself
 ********************************************************************/
 
+.counter {
+    position: absolute;
+    left: 10px;
+    top: 180px;
+    font-size: 40px;
+    text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff;
+}
+
+.counter.pos {
+    color: green;
+}
+
+.counter.neg {
+    color: red;
+}
+
+.playingCards ul.hand ul.counters li:nth-child(1)  { left: 0; }
+.playingCards ul.hand ul.counters li:nth-child(2)  { left: 2.0em; }
+.playingCards ul.hand ul.counters li:nth-child(3)  { left: 4.0em; }
+.playingCards ul.hand ul.counters li:nth-child(4)  { left: 6.0em; }
+
 .playingCards .card {
     display: inline-block;
     width: 8.8em;
