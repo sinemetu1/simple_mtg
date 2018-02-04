@@ -12,8 +12,8 @@
 
 .counter {
     position: absolute;
-    left: 10px;
-    top: 180px;
+    left: 0.25em;
+    top: 4.8em;
     font-size: 40px;
     text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff;
 }
@@ -33,17 +33,17 @@
 
 .playingCards .card {
     display: inline-block;
-    width: 8.8em;
-    height: 12.267em;
-    border: 1px solid #666;
-    border-radius: .3em;
-    -moz-border-radius: .3em;
-    -webkit-border-radius: .3em;
-    -khtml-border-radius: .3em;
-    padding: .25em;
-    margin: 0 .5em .5em 0;
+    width: 11em;
+    /*height: 12.267em;*/
+    /*border: 1px solid #666;*/
+    border-radius: .6em;
+    -moz-border-radius: .6em;
+    -webkit-border-radius: .6em;
+    -khtml-border-radius: .6em;
+    /*padding: .25em;*/
+    /*margin: 0 .5em .5em 0;*/
     text-align: center;
-    font-size: 1.2em; /* @change: adjust this value to make bigger or smaller cards */
+    /*font-size: 1.2em; [> @change: adjust this value to make bigger or smaller cards <]*/
     font-weight: normal;
     font-family: Arial, sans-serif;
     position: relative;
