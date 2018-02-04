@@ -21,6 +21,12 @@
     padding-left: 1em;
 }
 
+#modal .card-img {
+    border-radius: .6em;
+    -moz-border-radius: .6em;
+    -webkit-border-radius: .6em;
+    -khtml-border-radius: .6em;
+}
 
 #modal .selected img {
     border: 2px solid #466d98;
