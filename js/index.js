@@ -11,6 +11,49 @@ index.init = function () {
     }
     index.bind_search();
     index.display_hands();
+    //index.join_or_create();
+};
+
+index.join_or_create = function () {
+    var $html = $('<div>'
+        + '<p class="lead">Join or create room.</p>'
+        + '<div class="row">'
+        + '  <div class="large-16 columns">'
+        + '    <label>Name'
+        + '      <input id="join_user_name" type="text" placeholder="type username" required pattern="alpha">'
+        + '      <span id="join_user_err" class="form-error">'
+        + '        A username with length 3 or greater is required. What about Bob?'
+        + '      </span>'
+        + '    </label>'
+        + '  </div>'
+        + '</div>'
+        + '<div class="row">'
+        + '  <div class="large-16 columns">'
+        + '    <div class="row collapse">'
+        + '      <div class="small-10 columns">'
+        + '        <input type="text" placeholder="Room id, if your friend has already created one" id="join_room_id">'
+        + '      </div>'
+        + '      <div class="small-2 columns">'
+        + '        <a id="join_room" href="#" class="button postfix">Join</a>'
+        + '      </div>'
+        + '    </div>'
+        + '  </div>'
+        + '</div>'
+        + '<div class="row">'
+        + '  <div class="large-16 columns">'
+        + '    <div class="row collapse">'
+        + '      <div class="small-2 columns">'
+        + '        <a id="create_room" href="#" class="button postfix">Create room</a>'
+        + '      </div>'
+        + '    </div>'
+        + '  </div>'
+        + '</div>'
+        + '</div>'
+    );
+
+    socket.bind_join($html.find('#join_room'));
+    socket.bind_join($html.find('#create_room'));
+    var $modal = index.basic_modal($html);
 };
 
 index.display_hands = function () {
@@ -27,28 +70,50 @@ index.display_hands = function () {
 
 index.bind_hand = function () {
     $(".hand .card").on('click', function (event) {
-        var url = $(this).data("imageUrl");
-        var card = {"imageUrl": url};
+        var $playingCards = $(this).closest('.playingCards');
+        var loc = $playingCards.attr('id').split('_')[1];
+        var idx = $playingCards.find(".card").index($(this));
+
+        var card = index[loc][idx];
         var $html = index.get_card_html(card);
-        $html.append('<div class="button-panel">'
+        $html.find(".card-holder").addClass("fleft");
+
+        $html.append('<div class="fleft mv-button-panel">'
             + '<button id="to_battlefield" type="button" class="button">Battlefield</button>'
             + '<button id="to_graveyard" type="button" class="button">Graveyeard</button>'
             + '<button id="to_exile" type="button" class="button">Exile</button>'
+            + '</br>'
+            + '<label>'
+            + '  Counter modifier (0 to clear counters)'
+            + '  <input id="counter_modifier" type="number" value="0">'
+            + '</label>'
+            + '<button id="add_counter" type="button" class="button">Add/Clear Counter</button>'
+            + '<button id="enchant_tap" type="button" class="button">Enchant/Tap</button>'
+            + '</br>'
             + '<button id="delete" type="button" class="button">Delete</button>'
             + '</div>'
         );
         
-        var pnt = $(this).closest('.playingCards').attr('id').split('_')[1];
+        var loc = $(this).closest('.playingCards').attr('id').split('_')[1];
         var $modal = index.basic_modal($html);
-        index.bind_btn_mv_panel(index[pnt], $html, card);
+        index.bind_btn_mv_panel(index[loc], $html, card, idx);
     });
 };
 
-index.bind_btn_mv_panel = function (src, pnl, card) {
-    var idx = src.findIndex(function (obj) {
-        if (obj.imageUrl == card.imageUrl) {
-            return true;
+index.bind_btn_mv_panel = function (src, pnl, card, idx) {
+    pnl.find("#add_counter").on('click tap', function (e) {
+        var mod = parseInt($("#counter_modifier").val(), 10);
+        var got = src[idx];
+        if (mod !== 0) {
+            var is_pos = mod > 0;
+            got.counters.push({"val": mod, "is_pos": is_pos});
+        } else {
+            got.counters = [];
         }
+
+        src[idx] = got;
+        index.display_hands();
+        $("#modal").foundation('close');
     });
     pnl.find("#to_battlefield").on('click tap', function (e) {
         src.splice(idx, 1);
@@ -144,24 +209,40 @@ index.build_search_modal = function (cards) {
         + '<button id="to_battlefield" type="button" class="button add fright">Battlefield</button>'
     );
     btn_panel.find('.add').on('click tap', function (e) {
-        var pnt = $(this).attr('id').split('_')[1];
-        var url = $('.selected').attr("href");
-        index[pnt].push({"imageUrl": url});
+        var $sel = $('.selected');
+        if ($sel.length !== 1) {
+            return;
+        }
+        var loc = $(this).attr('id').split('_')[1];
+        var url = $sel.attr("href");
+        var name = $sel.attr("name");
+
+        var id = index[loc].length+1;
+        var card_obj = {
+            'card_name': name,
+            'imageUrl': url,
+            'tokens': [],
+            'counters': []
+        };
+        index[loc].push(card_obj);
+
+        socket.send_card(loc, card_obj);
+
         index.display_hands();
         $("#modal").foundation('close');
     });
     
     images.append(btn_panel);
     index.basic_modal(images);
-    
 };
 
 index.get_card_html = function (card) {
     var url = card.imageUrl;
+    var name = card.name;
     var img_html = '<div class="media-object-section">'
             //+ '<p class="name">' + name + '</p>'
-            +  '<div>'
-            +    '<a class="th" href="' + url + '">'
+            +  '<div class="card-holder">'
+            +    '<a class="th" href="' + url + '" name="' + name + '">'
             +      '<img src="' + url + '">'
             //+      '<span class="image-hover-wrapper-reveal">'
             //+        '<p>Check it<br><i class="fa fa-link" aria-hidden="true"></i></p>'
@@ -179,6 +260,7 @@ index.basic_modal = function ($html) {
         +    '<span aria-hidden="true">&times;</span>'
         +  '</button>'
     );
-    $modal.append($html).foundation('open');
+    $modal.append($html);
+    $modal.foundation('open');
     return $modal;
 };
