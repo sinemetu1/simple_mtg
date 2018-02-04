@@ -11,7 +11,7 @@ index.init = function () {
     }
     index.bind_search();
     index.display_hands();
-    index.join_or_create();
+    //index.join_or_create();
 };
 
 index.join_or_create = function () {
