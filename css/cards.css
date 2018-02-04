@@ -19,11 +19,11 @@
 }
 
 .counter.pos {
-    color: green;
+    color: rgb(0, 115, 62);
 }
 
 .counter.neg {
-    color: red;
+    color: rgb(211, 32, 42);
 }
 
 .playingCards ul.hand ul.counters li:nth-child(1)  { left: 0; }
