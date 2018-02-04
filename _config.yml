@@ -6,3 +6,5 @@ url:             http://sinemetu1.github.io
 baseurl:         /simple_mtg
 permalink:       /:title.html
 future:          false
+exclude:
+    - server/*
