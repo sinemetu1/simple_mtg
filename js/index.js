@@ -115,6 +115,17 @@ index.bind_btn_mv_panel = function (src, pnl, card, idx) {
         index.display_hands();
         $("#modal").foundation('close');
     });
+    pnl.find("#enchant_tap").on('click tap', function (e) {
+        var got = src[idx];
+        if (got.is_tapped) {
+            got.is_tapped = false;
+        } else {
+            got.is_tapped = true;
+        }
+        src[idx] = got;
+        index.display_hands();
+        $("#modal").foundation('close');
+    });
     pnl.find("#to_battlefield").on('click tap', function (e) {
         src.splice(idx, 1);
         index.battlefield.push(card);

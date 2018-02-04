@@ -25,6 +25,9 @@
 .counter.neg {
     color: rgb(211, 32, 42);
 }
+.playingCards .card.card-tapped img {
+    opacity: 0.5;
+}
 
 .playingCards ul.hand ul.counters li:nth-child(1)  { left: 0; }
 .playingCards ul.hand ul.counters li:nth-child(2)  { left: 2.0em; }

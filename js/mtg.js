@@ -49,6 +49,9 @@ mtg.get_card = function (a_card) {
         + "<ul class='counters'>" + mtg.get_counters(a_card) + "</ul>"
         + "<img src='" + a_card.imageUrl + "'/>"
         + "</a>");
+    if (a_card.is_tapped) {
+        the_card.addClass("card-tapped");
+    }
     return $("<li></li>").append(the_card);
 };
 
