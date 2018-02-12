@@ -5,20 +5,23 @@ index.init = function () {
         index.is_mobile = true;
         document.addEventListener("touchstart", function(){}, true); // hover work for mobile
     }
-    index.players = [{
-        name: "sam",
-        battlefield: [],
-        graveyard: [],
-        exile: []
-    }, {
-        name: "bob",
-        battlefield: [],
-        graveyard: [],
-        exile: []
-    }];
+    index.players = [];
     index.bind_search();
-    index.display_players(index.players);
     index.join_or_create();
+};
+
+index.add_player = function (name) {
+    index.players.push(index.make_player(name));
+    index.display_players(index.players);
+};
+
+index.make_player = function (name) {
+    return {
+        name: name,
+        battlefield: [],
+        graveyard: [],
+        exile: []
+    };
 };
 
 index.get_player = function (name) {

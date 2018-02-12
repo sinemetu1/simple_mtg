@@ -23,11 +23,20 @@ socket.handle_message = function (msg) {
     if (msg.type === 'room_card_event') {
     } else if (msg.type === 'hand_update_event') {
         var a_player = index.get_player(msg.from);
+        if (a_player.obj == null) {
+            index.add_player(msg.from);
+            a_player = index.get_player(msg.from);
+        }
         var got = a_player.obj;
         var idx = a_player.idx;
         index.players[idx][msg.obj.loc] = msg.obj.data;
         index.display_players(index.players);
         $("#tab_click_" + msg.from).click();
+    } else if (msg.type === 'room_entered') {
+        var a_player = index.get_player(msg.from);
+        if (a_player.obj == null) {
+            index.add_player(msg.from);
+        }
     }
     var to_append = '<br>' +
         $('<p class="message"/>').text('Received #' + msg.count + ': ' + msg.data)
@@ -132,6 +141,7 @@ socket.bind_join = function ($html) {
             $("#modal").foundation('close');
         }
         index.display_players(index.players);
+        index.add_player(name);
         return false;
     });
 };
