@@ -1,17 +1,38 @@
 var index = {};
 
-index.battlefield = [];
-index.graveyard = [];
-index.exile = [];
-
 index.init = function () {
     if (/Mobi/.test(navigator.userAgent)) {
         index.is_mobile = true;
         document.addEventListener("touchstart", function(){}, true); // hover work for mobile
     }
+    index.players = [{
+        name: "sam",
+        battlefield: [],
+        graveyard: [],
+        exile: []
+    }, {
+        name: "bob",
+        battlefield: [],
+        graveyard: [],
+        exile: []
+    }];
     index.bind_search();
-    index.display_hands();
-    //index.join_or_create();
+    index.display_players(index.players);
+    index.join_or_create();
+};
+
+index.get_player = function (name) {
+    var got = null;
+    var idx = -1;
+    for (var i = 0; i < index.players.length; i++) {
+        var curr = index.players[i];
+        if (curr.name === name) {
+            got = curr;
+            idx = i;
+            break;
+        }
+    }
+    return {"obj": got, "idx": idx};
 };
 
 index.join_or_create = function () {
@@ -56,31 +77,31 @@ index.join_or_create = function () {
     var $modal = index.basic_modal($html);
 };
 
-index.display_hands = function () {
-    var a_hand = mtg.make_hand(index.battlefield);
-    $("#hand_battlefield").html(a_hand);
+index.display_hands = function ($container, a_player) {
+    var a_hand = mtg.make_hand(a_player.battlefield);
+    $container.find(".hand_battlefield").html(a_hand);
 
-    var a_hand = mtg.make_hand(index.graveyard);
-    $("#hand_graveyard").html(a_hand);
+    var a_hand = mtg.make_hand(a_player.graveyard);
+    $container.find(".hand_graveyard").html(a_hand);
 
-    var a_hand = mtg.make_hand(index.exile);
-    $("#hand_exile").html(a_hand);
-    index.bind_hand();
+    var a_hand = mtg.make_hand(a_player.exile);
+    $container.find(".hand_exile").html(a_hand);
+    index.bind_hand($container, a_player);
 };
 
-index.bind_hand = function () {
-    $(".hand .card").on('click', function (event) {
+index.bind_hand = function ($container, a_player) {
+    $container.find(".hand .card").on('click tap', function (event) {
         var $playingCards = $(this).closest('.playingCards');
-        var loc = $playingCards.attr('id').split('_')[1];
+        var loc = $playingCards.attr('id').split('_')[2];
         var idx = $playingCards.find(".card").index($(this));
 
-        var card = index[loc][idx];
+        var card = a_player[loc][idx];
         var $html = index.get_card_html(card);
         $html.find(".card-holder").addClass("fleft");
 
         $html.append('<div class="fleft mv-button-panel">'
             + '<button id="to_battlefield" type="button" class="button">Battlefield</button>'
-            + '<button id="to_graveyard" type="button" class="button">Graveyeard</button>'
+            + '<button id="to_graveyard" type="button" class="button">Graveyard</button>'
             + '<button id="to_exile" type="button" class="button">Exile</button>'
             + '</br>'
             + '<label>'
@@ -94,16 +115,15 @@ index.bind_hand = function () {
             + '</div>'
         );
         
-        var loc = $(this).closest('.playingCards').attr('id').split('_')[1];
         var $modal = index.basic_modal($html);
-        index.bind_btn_mv_panel(index[loc], $html, card, idx);
+        index.bind_btn_mv_panel(a_player, loc, $html, card, idx);
     });
 };
 
-index.bind_btn_mv_panel = function (src, pnl, card, idx) {
+index.bind_btn_mv_panel = function (a_player, loc, pnl, card, idx) {
     pnl.find("#add_counter").on('click tap', function (e) {
         var mod = parseInt($("#counter_modifier").val(), 10);
-        var got = src[idx];
+        var got = a_player[loc][idx];
         if (mod !== 0) {
             var is_pos = mod > 0;
             got.counters.push({"val": mod, "is_pos": is_pos});
@@ -111,42 +131,57 @@ index.bind_btn_mv_panel = function (src, pnl, card, idx) {
             got.counters = [];
         }
 
-        src[idx] = got;
-        index.display_hands();
+        a_player[loc][idx] = got;
+        index.display_players(index.players);
+
+        socket.send_card(loc, got);
         $("#modal").foundation('close');
     });
     pnl.find("#enchant_tap").on('click tap', function (e) {
-        var got = src[idx];
+        var got = a_player[loc][idx];
         if (got.is_tapped) {
             got.is_tapped = false;
         } else {
             got.is_tapped = true;
         }
-        src[idx] = got;
-        index.display_hands();
+        a_player[loc][idx] = got;
+
+        index.display_players(index.players);
+        socket.send_card(loc, got);
         $("#modal").foundation('close');
     });
     pnl.find("#to_battlefield").on('click tap', function (e) {
-        src.splice(idx, 1);
-        index.battlefield.push(card);
-        index.display_hands();
+        a_player[loc].splice(idx, 1);
+        a_player.battlefield.push(card);
+
+        index.display_players(index.players);
+        socket.send_card(loc, null);
+        socket.send_card("battlefield", card);
         $("#modal").foundation('close');
     });
     pnl.find("#to_graveyard").on('click tap', function (e) {
-        src.splice(idx, 1);
-        index.graveyard.push(card);
-        index.display_hands();
+        a_player[loc].splice(idx, 1);
+        a_player.graveyard.push(card);
+
+        index.display_players(index.players);
+        socket.send_card(loc, null);
+        socket.send_card("graveyard", card);
         $("#modal").foundation('close');
     });
     pnl.find("#to_exile").on('click tap', function (e) {
-        src.splice(idx, 1);
-        index.exile.push(card);
-        index.display_hands();
+        a_player[loc].splice(idx, 1);
+        a_player.exile.push(card);
+
+        index.display_players(index.players);
+        socket.send_card(loc, null);
+        socket.send_card("exile", card);
         $("#modal").foundation('close');
     });
     pnl.find("#delete").on('click tap', function (e) {
-        src.splice(idx, 1);
-        index.display_hands();
+        a_player[loc].splice(idx, 1);
+
+        index.display_players(index.players);
+        socket.send_card(loc, null);
         $("#modal").foundation('close');
     });
 };
@@ -210,13 +245,14 @@ index.build_search_modal = function (cards) {
     if (index.is_mobile) {
         var $close = $('<button class="button fleft" data-close type="button">Close</button>').on('click tap',
             function () {
+                $("#search_in").val("")
                 $("#modal").foundation('close');
             });
         btn_panel.append($close);
     }
     btn_panel.append(
         '<button id="to_exile" type="button" class="button add fright">Exile</button>'
-        + '<button id="to_graveyard" type="button" class="button add fright">Graveyeard</button>'
+        + '<button id="to_graveyard" type="button" class="button add fright">Graveyard</button>'
         + '<button id="to_battlefield" type="button" class="button add fright">Battlefield</button>'
     );
     btn_panel.find('.add').on('click tap', function (e) {
@@ -228,18 +264,24 @@ index.build_search_modal = function (cards) {
         var url = $sel.attr("href");
         var name = $sel.attr("name");
 
-        var id = index[loc].length+1;
+        if (socket.username === "") {
+            var the_player = index.players[0];
+        } else {
+            var the_player = index.get_player(socket.username).obj;
+        }
+        var id = the_player[loc].length+1;
         var card_obj = {
             'card_name': name,
             'imageUrl': url,
             'tokens': [],
             'counters': []
         };
-        index[loc].push(card_obj);
+        the_player[loc].push(card_obj);
 
         socket.send_card(loc, card_obj);
 
-        index.display_hands();
+        index.display_players(index.players);
+        $("#search_in").val("")
         $("#modal").foundation('close');
     });
     
@@ -272,6 +314,83 @@ index.basic_modal = function ($html) {
         +  '</button>'
     );
     $modal.append($html);
+    $(document).foundation();
     $modal.foundation('open');
     return $modal;
+};
+
+index.display_players = function (players) {
+    var $tabs = $('<div class="tabs-content" data-tabs-content="player_tabs"></div>');
+    var $tab_nav = $('<ul class="tabs" data-tabs id="player_tabs"></ul>');
+    for (var i = 0; i < players.length; i++) {
+        var curr = players[i];
+        var $a_nav = $('<li class="tabs-title"><a href="#tab_'
+            + curr.name + '" >' + curr.name + '</a></li>');
+        if (i == 0) {
+            $a_nav.addClass('is-active');
+            $a_nav.find('a').attr('aria-selected', true);
+        }
+        $tab_nav.append($a_nav);
+    }
+    $tabs.append($tab_nav);
+    for (var i = 0; i < players.length; i++) {
+        var curr = players[i];
+        var $player = $('<div class="tabs-panel" id="tab_' + curr.name + '"></div>');
+        if (i == 0) {
+            $player.addClass('is-active');
+        }
+        $player.append(index.get_player_html(curr, i==0));
+        index.display_hands($player, curr);
+        $tabs.append($player);
+    }
+    $("#player_tabs_container").html($tabs);
+    $(document).foundation();
+};
+
+index.get_player_html = function(a_player, has_chat) {
+    var $chat = '';
+    var name = a_player.name;
+    if (has_chat) {
+        var $chat = '<div class="large-6 columns">'
+        + '    <div class="row collapse">'
+        + '        <div id="chat_log">'
+        + '        </div>'
+        + '        <div class="large-10 columns">'
+        + '            <input id="chat_to_send" type="text" placeholder="message" />'
+        + '        </div>'
+        + '        <div class="large-2 columns">'
+        + '            <button id="chat_send_btn" type="button" class="button">Send</button>'
+        + '        </div>'
+        + '    </div>'
+        + '</div>'
+        ;
+    }
+    var bf_class = has_chat ? 'large-6' : 'large-12';
+    var $player = $('<div class="row">'
+        + '    <p>Battlefield</p>'
+        + '    <div id="player_' + name + '_battlefield" class="hand_battlefield playingCards ' + bf_class + ' columns">'
+        + '    </div>'
+        +   $chat
+        + '</div>'
+        + '<div class="row">'
+        + '    <p>Graveyard</p>'
+        + '    <div id="player_' + name + '_graveyard" class="hand_graveyard playingCards large-12 columns">'
+        + '    </div>'
+        + '</div>'
+        + '<div class="row">'
+        + '    <p>Exile</p>'
+        + '    <div id="player_' + name + '_exile" class="hand_exile playingCards large-12 columns">'
+        + '    </div>'
+        + '</div>'
+    );
+
+    $player.find('#chat_send_btn').on('click tap', function(event) {
+        var to_send = $('#chat_to_send').val();
+        if ($.trim(to_send) !== "") {
+            socket.socket.emit('my_room_event', {room: socket.room, data: $('#chat_to_send').val()});
+            $('#chat_to_send').val("");
+        }
+        return false;
+    });
+    return $player;
 };

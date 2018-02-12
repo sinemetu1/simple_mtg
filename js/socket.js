@@ -1,13 +1,14 @@
 var socket = {};
 
 socket.namespace = '/test';
-socket.port = 5000;
+socket.port = ""; // ":5000";
 socket.room = "";
 socket.username = "";
+socket.domain = "https://simple-mtg.herokuapp.com";
 
 socket.init_socket = function () {
     if (socket.socket === undefined) {
-        socket.socket = io.connect(location.protocol + '//' + document.domain + ':' + socket.port + socket.namespace);
+        socket.socket = io.connect(socket.domain + socket.namespace);
     } else {
         console.error('Should not need to rebind socket!!!');
     }
@@ -19,9 +20,12 @@ socket.handle_message = function (msg) {
         return;
     }
     if (msg.type === 'room_card_event') {
-        // TODO: handle player card event
-        index[msg.obj.loc].push(msg.obj.data);
-        index.display_hands();
+    } else if (msg.type === 'hand_update_event') {
+        var a_player = index.get_player(msg.from);
+        var got = a_player.obj;
+        var idx = a_player.idx;
+        index.players[idx][msg.obj.loc] = msg.obj.data;
+        index.display_players(index.players);
     }
     var to_append = '<br>' +
         $('<p class="message"/>').text('Received #' + msg.count + ': ' + msg.data)
@@ -55,15 +59,6 @@ socket.bind = function (skt, debug) {
             $('#ping-pong').text(Math.round(10 * sum / ping_pong_times.length) / 10);
         });
     }
-
-    $('#chat_send_btn').on('click tap', function(event) {
-        var to_send = $('#chat_to_send').val();
-        if ($.trim(to_send) !== "") {
-            skt.emit('my_room_event', {room: socket.room, data: $('#chat_to_send').val()});
-            $('#chat_to_send').val("");
-        }
-        return false;
-    });
     
 
     //$('form#close').submit(function(event) {
@@ -82,11 +77,23 @@ socket.send_card = function (loc, card_obj) {
         console.log(loc, card_obj);
         return;
     }
-    socket.socket.emit('room_card_event', {
+    var a_player = index.get_player(socket.username);
+    var a_hand = a_player.obj[loc];
+
+    if (card_obj !== null) { // will be null if card was deleted
+        socket.socket.emit('room_card_event', {
+            room: socket.room,
+            name: socket.username,
+            loc: loc,
+            data: card_obj
+        });
+    }
+
+    socket.socket.emit('hand_update_event', {
         room: socket.room,
         name: socket.username,
         loc: loc,
-        data: card_obj
+        data: a_hand
     });
 };
 
@@ -99,7 +106,7 @@ socket.bind_join = function ($html) {
         }
         
         socket.init_socket();
-        socket.bind(socket.socket, true);
+        socket.bind(socket.socket, false);
 
         var name = $('#join_user_name').val();
         var rm = $('#join_room_id').val();
