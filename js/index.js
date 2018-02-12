@@ -324,7 +324,7 @@ index.display_players = function (players) {
     var $tab_nav = $('<ul class="tabs" data-tabs id="player_tabs"></ul>');
     for (var i = 0; i < players.length; i++) {
         var curr = players[i];
-        var $a_nav = $('<li class="tabs-title"><a href="#tab_'
+        var $a_nav = $('<li class="tabs-title"><a id="tab_click_' + curr.name + '" href="#tab_'
             + curr.name + '" >' + curr.name + '</a></li>');
         if (i == 0) {
             $a_nav.addClass('is-active');
@@ -339,7 +339,7 @@ index.display_players = function (players) {
         if (i == 0) {
             $player.addClass('is-active');
         }
-        $player.append(index.get_player_html(curr, i==0));
+        $player.append(index.get_player_html(curr, curr.name == socket.username));
         index.display_hands($player, curr);
         $tabs.append($player);
     }

@@ -17,6 +17,7 @@ socket.init_socket = function () {
 socket.handle_message = function (msg) {
     if (msg.from === socket.username) {
         console.log('suppressing own messages...');
+        $("#tab_click_" + msg.from).click();
         return;
     }
     if (msg.type === 'room_card_event') {
@@ -26,6 +27,7 @@ socket.handle_message = function (msg) {
         var idx = a_player.idx;
         index.players[idx][msg.obj.loc] = msg.obj.data;
         index.display_players(index.players);
+        $("#tab_click_" + msg.from).click();
     }
     var to_append = '<br>' +
         $('<p class="message"/>').text('Received #' + msg.count + ': ' + msg.data)
@@ -59,6 +61,15 @@ socket.bind = function (skt, debug) {
             $('#ping-pong').text(Math.round(10 * sum / ping_pong_times.length) / 10);
         });
     }
+
+    $('#chat_send_btn').on('click tap', function(event) {
+        var to_send = $('#chat_to_send').val();
+        if ($.trim(to_send) !== "") {
+            skt.emit('my_room_event', {room: socket.room, data: $('#chat_to_send').val()});
+            $('#chat_to_send').val("");
+        }
+        return false;
+    });
     
 
     //$('form#close').submit(function(event) {
@@ -106,7 +117,7 @@ socket.bind_join = function ($html) {
         }
         
         socket.init_socket();
-        socket.bind(socket.socket, false);
+        socket.bind(socket.socket, true);
 
         var name = $('#join_user_name').val();
         var rm = $('#join_room_id').val();
@@ -120,6 +131,7 @@ socket.bind_join = function ($html) {
         if ($html.closest('#modal').length >= 1) {
             $("#modal").foundation('close');
         }
+        index.display_players(index.players);
         return false;
     });
 };
