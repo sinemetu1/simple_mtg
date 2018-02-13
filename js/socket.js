@@ -66,7 +66,7 @@ socket.bind = function (skt, debug) {
         }
     });
     skt.on('share_room', function (msg) {
-        var url = location.protocol + '//' + document.domain + '?' + index.ROOM_ID + '=' + msg.data;
+        var url = location.protocol + '//' + document.domain + document.location.pathname + '?' + index.ROOM_ID + '=' + msg.data;
         socket.append_to_chat_log('<a target="_blank" href="' + url + '">Share this room with your friends.</a>');
     });
 
