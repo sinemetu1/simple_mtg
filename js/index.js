@@ -1,5 +1,7 @@
 var index = {};
 
+index.ROOM_ID = "roomId";
+
 index.init = function () {
     if (/Mobi/.test(navigator.userAgent)) {
         index.is_mobile = true;
@@ -39,6 +41,7 @@ index.get_player = function (name) {
 };
 
 index.join_or_create = function () {
+    var roomId = getParameterByName(index.ROOM_ID)
     var $html = $('<div>'
         + '<p class="lead">Join or create room.</p>'
         + '<div class="row">'
@@ -74,6 +77,9 @@ index.join_or_create = function () {
         + '</div>'
         + '</div>'
     );
+    if (roomId) {
+        $html.find('#join_room_id').val(roomId);
+    }
 
     socket.bind_join($html.find('#join_room'));
     socket.bind_join($html.find('#create_room'));
@@ -354,9 +360,11 @@ index.get_player_html = function(a_player, has_chat) {
     var $chat = '';
     var name = a_player.name;
     if (has_chat) {
-        var $chat = '<div class="large-6 columns">'
+        var $log = $("#chat_log");
+        var $chat = '<div class="large-4 columns">'
         + '    <div class="row collapse">'
         + '        <div id="chat_log">'
+        + ($log.length > 0 ? $log.html() : "")
         + '        </div>'
         + '        <div class="large-10 columns">'
         + '            <input id="chat_to_send" type="text" placeholder="message" />'
@@ -368,7 +376,7 @@ index.get_player_html = function(a_player, has_chat) {
         + '</div>'
         ;
     }
-    var bf_class = has_chat ? 'large-6' : 'large-12';
+    var bf_class = has_chat ? 'large-8' : 'large-12';
     var $player = $('<div class="row">'
         + '    <p>Battlefield</p>'
         + '    <div id="player_' + name + '_battlefield" class="hand_battlefield playingCards ' + bf_class + ' columns">'
@@ -386,6 +394,12 @@ index.get_player_html = function(a_player, has_chat) {
         + '    </div>'
         + '</div>'
     );
+    //$player.on('show', function () {
+        //var $chat_log = $player.find("#chat_log");
+        //if ($chat_log) {
+            //$chat_log.animate({scrollTop:$chat_log[0].scrollHeight}, 500);
+        //}
+    //});
 
     $player.find('#chat_send_btn').on('click tap', function(event) {
         var to_send = $('#chat_to_send').val();
@@ -397,3 +411,15 @@ index.get_player_html = function(a_player, has_chat) {
     });
     return $player;
 };
+
+/* general fns */
+
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}

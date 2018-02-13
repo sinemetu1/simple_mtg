@@ -14,14 +14,34 @@ socket.init_socket = function () {
     }
 };
 
+socket.append_to_chat_log = function (message, from) {
+    var $from_html = "";
+    if (from !== undefined) {
+        $from_html = '<b>' + from + '</b> ';
+    }
+    var to_append = $('<p class="message"/>').html($from_html + message).html() +
+        '</br>';
+    $('#chat_log').append(to_append);
+    $("#chat_log").animate({scrollTop:$("#chat_log")[0].scrollHeight}, 500);
+};
+
 socket.handle_message = function (msg) {
     if (msg.from === socket.username) {
         console.log('suppressing own messages...');
         $("#tab_click_" + msg.from).click();
         return;
     }
-    if (msg.type === 'room_card_event') {
-    } else if (msg.type === 'hand_update_event') {
+    socket.append_to_chat_log(msg.data, msg.from);
+};
+
+socket.bind = function (skt, debug) {
+    skt.on('connect', function() {
+        socket.append_to_chat_log('You\'re connected!');
+    });
+    skt.on('reconnect', () => {
+        skt.emit('join', {room: socket.room, name: socket.username});
+    });
+    skt.on('hand_update_event', function (msg) {
         var a_player = index.get_player(msg.from);
         if (a_player.obj == null) {
             index.add_player(msg.from);
@@ -31,26 +51,24 @@ socket.handle_message = function (msg) {
         var idx = a_player.idx;
         index.players[idx][msg.obj.loc] = msg.obj.data;
         index.display_players(index.players);
-        $("#tab_click_" + msg.from).click();
-    } else if (msg.type === 'room_entered') {
+        //$("#tab_click_" + msg.from).click();
+    });
+    skt.on('room_card_event', function (msg) {
+        if (msg.from === socket.username) { return; }
+        socket.append_to_chat_log(msg.data, msg.from);
+    });
+    skt.on('room_entered', function (msg) {
         var a_player = index.get_player(msg.from);
+        if (msg.from === socket.username) { return; }
         if (a_player.obj == null) {
             index.add_player(msg.from);
+            socket.append_to_chat_log('entered the room.', msg.from);
         }
-    }
-    var to_append = '<br>' +
-        $('<p class="message"/>').text('Received #' + msg.count + ': ' + msg.data)
-        .html();
-    $('#chat_log').append(to_append);
-};
-
-socket.bind = function (skt, debug) {
-    skt.on('connect', function() {
-        skt.emit('my_event', {data: 'I\'m connected!'});
     });
-    skt.on('reconnect', () => {
-        skt.emit('join', {room: socket.room, name: socket.username});
-    })
+    skt.on('share_room', function (msg) {
+        var url = location.protocol + '//' + document.domain + '?' + index.ROOM_ID + '=' + msg.data;
+        socket.append_to_chat_log('<a target="_blank" href="' + url + '">Share this room with your friends.</a>');
+    });
 
     skt.on('my_response', socket.handle_message);
     if (debug) {
