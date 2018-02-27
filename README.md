@@ -5,11 +5,14 @@
 
 ## What is simple_mtg?
 
-It's a ui for playing mtg with your friends online.
+It's a ui for playing mtg with your friends online in combination with Facetime
+or something similar.
 
 _It is not produced, endorsed, supported, or affiliated with Wizards of the
 Coast in any way. Card data served on the site is Copyright © Wizards of the
 Coast \- All Rights Reserved_
+
+Rules are meant to be followed by the players and not enforced by this app.
 
 ## Why?
 
@@ -21,6 +24,7 @@ lightweight ui that works on mobile and desktop.
 - caching of game state using local storage
 - fuzzy search
 - token card search
+- other stuff probably
 
 ## Notes
 
