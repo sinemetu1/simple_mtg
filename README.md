@@ -34,8 +34,12 @@ sockets][sockets] and the [magicthegathering.io api][mtgio].
 \*\*\* Please note that no data is stored by simple_mtg. Session and chat room
 data is transient. Messages are **_not_** currently encrypted.
 
+If you like this thing and find it useful, go buy some cards or maybe [help
+some people who need it][gw]!
+
 [mtgo]: https://magic.wizards.com/en/content/magic-online-products-game-info
 [hku]: https://heroku.com
 [ghp]: https://pages.github.com
 [sockets]: https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API
 [mtgio]: https://magicthegathering.io/#donate
+[gw]: https://www.givewell.org/charities/top-charities
