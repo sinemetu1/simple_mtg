@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import logging
+import os
 
 from threading import Lock
 from flask import Flask, render_template, session, request
@@ -14,19 +15,19 @@ async_mode = None
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app, async_mode=async_mode)
-thread = None
-thread_lock = Lock()
+# thread = None
+# thread_lock = Lock()
 
 
-def background_thread():
-    """Example of how to send server generated events to clients."""
-    count = 0
-    while True:
-        socketio.sleep(10)
-        count += 1
-        socketio.emit('my_response',
-                      {'data': 'Server generated event', 'count': count},
-                      namespace='/test')
+# def background_thread():
+    # """Example of how to send server generated events to clients."""
+    # count = 0
+    # while True:
+        # socketio.sleep(10)
+        # count += 1
+        # socketio.emit('my_response',
+                      # {'data': 'Server generated event', 'count': count},
+                      # namespace='/test')
 
 
 # @app.route('/')
@@ -57,13 +58,18 @@ def join(message):
     logging.info("{} joined {}".format(name, room))
 
     session['receive_count'] = session.get('receive_count', 0) + 1
-    emit('my_response',
-         {'data': name + ' in rooms: ' + ', '.join(rooms()),
-          'count': session['receive_count']})
+    # emit('my_response',
+         # {'data': name + ' in rooms: ' + ', '.join(rooms()),
+          # 'count': session['receive_count']})
+    emit('share_room',
+         {'data': room, # 'Tell your friends to join this room: <b>' + room + '</b>',
+          'count': session['receive_count']
+          })
     # message the room:
-    emit('my_response',
-        {'data': name + ' has entered the room. (' + room + ')',
-          'from': name},
+    emit('room_entered',
+        {'data': room,
+          'from': name
+          },
         room=room)
 
 
@@ -96,18 +102,38 @@ def send_room_message(message):
 @socketio.on('room_card_event', namespace='/test')
 def send_room_message(message):
     session['receive_count'] = session.get('receive_count', 0) + 1
-    to_emit = "{} cast {} to their {}".format(
-        message['name'],
+    to_emit = "cast {} to their {}".format(
         message['data']['card_name'],
         message['loc']
     )
-    emit('my_response',
-         {'data': to_emit,
-           'obj': message,
-           'count': session['receive_count'],
-           'from': message['name'],
-          'type': 'room_card_event'},
-         room=message['room'])
+    emit('room_card_event',
+        {
+          'data': to_emit,
+          'obj': message,
+          'count': session['receive_count'],
+          'from': message['name'],
+          'type': 'room_card_event'
+        },
+        room=message['room']
+    )
+
+
+@socketio.on('hand_update_event', namespace='/test')
+def send_room_message(message):
+    session['receive_count'] = session.get('receive_count', 0) + 1
+    to_emit = "{} updated their {}".format(
+        message['name'],
+        message['loc']
+    )
+    emit('hand_update_event',
+        {
+          'data': to_emit,
+          'obj': message,
+          'count': session['receive_count'],
+          'from': message['name']
+        },
+        room=message['room']
+    )
 
 
 @socketio.on('disconnect_request', namespace='/test')
@@ -125,11 +151,11 @@ def ping_pong():
 
 @socketio.on('connect', namespace='/test')
 def test_connect():
-    global thread
-    with thread_lock:
-        if thread is None:
-            thread = socketio.start_background_task(target=background_thread)
-    emit('my_response', {'data': 'Connected', 'count': 0})
+    # global thread
+    # with thread_lock:
+        # if thread is None:
+            # thread = socketio.start_background_task(target=background_thread)
+    emit('connected', {'data': 'Connected', 'count': 0})
 
 
 @socketio.on('disconnect', namespace='/test')
@@ -138,7 +164,8 @@ def test_disconnect():
 
 def main():
     logging.basicConfig(level=logging.INFO)
-    socketio.run(app, debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    socketio.run(app, host='0.0.0.0', port=port, debug=False)
 
 if __name__ == '__main__':
     main()
