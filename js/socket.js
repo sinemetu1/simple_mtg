@@ -28,7 +28,7 @@ socket.append_to_chat_log = function (message, from) {
 socket.handle_message = function (msg) {
     if (msg.from === socket.username) {
         console.log('suppressing own messages...');
-        $("#tab_click_" + msg.from).click();
+        //$("#tab_click_" + msg.from).click();
         return;
     }
     socket.append_to_chat_log(msg.data, msg.from);
@@ -51,7 +51,7 @@ socket.bind = function (skt, debug) {
         var idx = a_player.idx;
         index.players[idx][msg.obj.loc] = msg.obj.data;
         index.display_players(index.players);
-        //$("#tab_click_" + msg.from).click();
+        $("#tab_click_" + msg.from).click();
     });
     skt.on('room_card_event', function (msg) {
         if (msg.from === socket.username) { return; }
