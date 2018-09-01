@@ -14,6 +14,8 @@ Coast \- All Rights Reserved_
 
 Rules are meant to be followed by the players and not enforced by this app.
 
+All code is [Apache 2.0 licensed][lic].
+
 ## Why?
 
 [MTG online][mtgo] is Windows only. :( Also, simple_mtg is meant to be a
@@ -37,6 +39,7 @@ data is transient. Messages are **_not_** currently encrypted.
 If you like this thing and find it useful, go buy some cards or maybe [help
 some people who need it][gw]!
 
+[lic]: https://github.com/sinemetu1/simple_mtg/blob/master/LICENSE
 [mtgo]: https://magic.wizards.com/en/content/magic-online-products-game-info
 [hku]: https://heroku.com
 [ghp]: https://pages.github.com
